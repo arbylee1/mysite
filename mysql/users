@@ -1,6 +1,6 @@
 USE movie;
 CREATE TABLE users (
-username VARCHAR(50) NOT NULL,
+username VARCHAR(50) NOT NULL PRIMARY KEY,
 hash VARCHAR(30) NOT NULL,
 salt CHAR(25) NOT NULL,
 email VARCHAR(50),
