@@ -13,8 +13,11 @@ public class MovieConnector {
     static private final String PASS = "password";
 
     private static MovieConnector connector;
-
+    private MovieConnector() {}
     public static MovieConnector getConnector() {
+        if (connector == null) {
+            connector = new MovieConnector();
+        }
         return connector;
     }
 
