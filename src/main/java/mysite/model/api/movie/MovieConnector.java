@@ -38,7 +38,7 @@ public class MovieConnector {
             md.update(salt);
             String hash = new String(md.digest());
             sql = String.format("INSERT INTO users (username,hash,salt)\n" +
-                    "VALUES (%s,%s,%s)", username, hash, new String(salt));
+                    "VALUES (\'%s\',\'%s\',\'%s\');", username, hash, new String(salt));
             stmt.executeQuery(sql);
 
         } catch (SQLException sqle) {
