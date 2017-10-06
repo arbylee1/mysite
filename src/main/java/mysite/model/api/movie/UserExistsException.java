@@ -1,4 +1,4 @@
 package mysite.model.api.movie;
 
-public class UserExistsException {
+public class UserExistsException extends RuntimeException {
 }
