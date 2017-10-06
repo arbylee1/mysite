@@ -1,4 +1,4 @@
-USE DATABASE movie;
+USE movie;
 CREATE TABLE users (
 username VARCHAR(50) NOT NULL,
 hash VARCHAR(30) NOT NULL,
