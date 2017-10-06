@@ -2,7 +2,6 @@ package mysite.controller;
 
 import mysite.model.api.movie.MovieConnector;
 import mysite.model.api.movie.User;
-import mysite.model.api.movie.UserExistsException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +16,7 @@ public class MovieAPIController  {
         try {
             MovieConnector.getConnector().registerUser(username, password);
             return true;
-        } catch (UserExistsException e) {
+        } catch (SQLException e) {
             return false;
         }
 

@@ -7,8 +7,8 @@ import java.security.MessageDigest;
 
 
 public class MovieConnector {
-    static private final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static private final String DB_URL = "jdbc:mysql://localhost/movie";
+    static private final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
+    static private final String DB_URL = "jdbc:mysql://localhost/movie?serverTimezone=UTC";
     static private final String USER = "username";
     static private final String PASS = "password";
 
@@ -22,7 +22,7 @@ public class MovieConnector {
     }
 
 
-    public void registerUser(String username, String password) throws UserExistsException {
+    public void registerUser(String username, String password) throws SQLException {
         Connection conn = null;
         Statement stmt = null;
         try {
@@ -39,14 +39,25 @@ public class MovieConnector {
             String hash = new String(md.digest());
             sql = String.format("INSERT INTO users (username,hash,salt)\n" +
                     "VALUES (\'%s\',\'%s\',\'%s\');", username, hash, new String(salt));
-            stmt.executeQuery(sql);
-
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
+            stmt.executeUpdate(sql);
+            stmt.close();
+            conn.close();
         } catch (NoSuchAlgorithmException nsae) {
             nsae.printStackTrace();
         } catch (ClassNotFoundException cnfe) {
             cnfe.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null)
+                    stmt.close();
+            } catch (SQLException se2) {
+                try {
+                    if (conn != null)
+                        conn.close();
+                } catch (SQLException se) {
+                    se.printStackTrace();
+                }
+            }
         }
     }
 
