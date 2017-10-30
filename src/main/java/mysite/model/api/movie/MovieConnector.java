@@ -69,7 +69,19 @@ public class MovieConnector {
             conn = DriverManager.getConnection(DB_URL,USER,PASS);
             stmt = conn.createStatement();
             String sql;
-            sql = "SELECT id, first, last, age FROM Employees";
+            sql = "SELECT * FROM TABLE WHERE ID = " + username;
+            ResultSet rs = stmt.executeQuery(sql);
+            stmt.close();
+            conn.close();
+            String salt = rs.getString("salt");
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(password.getBytes());
+            md.update(salt.getBytes());
+            String hash = new String(md.digest());
+            if (hash.equals(rs.getString("hash"))) {
+                return new User(rs.getString("email"),rs.getString("name"),rs.getString("major"),
+                        rs.getString("interests"), rs.getBoolean("isBanned"),rs.getBoolean("isAdmin"));
+            }
 
         } catch (SQLException sqle) {
             sqle.printStackTrace();
