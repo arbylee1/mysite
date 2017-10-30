@@ -21,6 +21,16 @@ public class User {
         this.isAdmin = isAdmin;
         this.isBanned = isBanned;
     }
+    public User(String email, String name, String major, String interests, boolean isAdmin, boolean isBanned) {
+        this.email = email;
+        this.name = name;
+        this.username = "";
+        this.password = "";
+        this.major = major;
+        this.interests = interests;
+        this.isAdmin = isAdmin;
+        this.isBanned = isBanned;
+    }
     public User(String username, boolean isAdmin, boolean isBanned) {
         this(null, null, username, null, null, null, isAdmin ,isBanned);
     }
