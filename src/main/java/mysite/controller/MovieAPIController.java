@@ -25,6 +25,6 @@ public class MovieAPIController  {
     @RequestMapping("/api/movie/login")
     public User login(@RequestParam(value="username", defaultValue = "") String username,
                       @RequestParam(value="password", defaultValue = "") String password) {
-        return null;
+        return MovieConnector.getConnector().login(username, password);
     }
 }
