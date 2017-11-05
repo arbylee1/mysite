@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.List;
 import java.security.SecureRandom;
 import java.security.MessageDigest;
+import org.springframework.security.crypto.bcrypt.*;
 
 
 public class MovieConnector {
@@ -23,74 +24,62 @@ public class MovieConnector {
 
 
     public void registerUser(String username, String password) throws SQLException {
-        Connection conn = null;
-        Statement stmt = null;
+        Connection connection = null;
+        Statement statement = null;
         try {
             Class.forName(JDBC_DRIVER);
-            conn = DriverManager.getConnection(DB_URL,USER,PASS);
-            stmt = conn.createStatement();
-            String sql;
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            SecureRandom random = new SecureRandom();
-            byte[] salt = new byte[25];
-            random.nextBytes(salt);
-            md.update(password.getBytes());
-            md.update(salt);
-            String hash = new String(md.digest());
-            sql = String.format("INSERT INTO users (username,hash,salt)\n" +
-                    "VALUES (\'%s\',\'%s\',\'%s\');", username, hash, new String(salt));
-            stmt.executeUpdate(sql);
-            stmt.close();
-            conn.close();
-        } catch (NoSuchAlgorithmException nsae) {
-            nsae.printStackTrace();
+            connection = DriverManager.getConnection(DB_URL,USER,PASS);
+            statement = connection.createStatement();
+            String hash = BCrypt.hashpw(password, BCrypt.gensalt());
+            String sql = String.format("INSERT INTO users (username,hash)\n" +
+                    "VALUES (\'%s\',\'%s\');", username, hash);
+            statement.executeUpdate(sql);
+            statement.close();
+            connection.close();
         } catch (ClassNotFoundException cnfe) {
             cnfe.printStackTrace();
-        } finally {
-            try {
-                if (stmt != null)
-                    stmt.close();
-            } catch (SQLException se2) {
-                try {
-                    if (conn != null)
-                        conn.close();
-                } catch (SQLException se) {
-                    se.printStackTrace();
-                }
-            }
         }
+        closeConnection(connection, statement);
     }
 
     public User login(String username, String password) {
-        Connection conn = null;
-        Statement stmt = null;
+        Connection connection = null;
+        Statement statement = null;
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection(DB_URL,USER,PASS);
-            stmt = conn.createStatement();
-            String sql;
-            sql = "SELECT * FROM TABLE WHERE ID = " + username;
-            ResultSet rs = stmt.executeQuery(sql);
-            stmt.close();
-            conn.close();
-            String salt = rs.getString("salt");
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(password.getBytes());
-            md.update(salt.getBytes());
-            String hash = new String(md.digest());
-            if (hash.equals(rs.getString("hash"))) {
-                return new User(rs.getString("email"),rs.getString("name"),rs.getString("major"),
+            connection = DriverManager.getConnection(DB_URL,USER,PASS);
+            statement = connection.createStatement();
+            String sql = "SELECT * FROM users WHERE username=\"" + username + "\"";
+            ResultSet rs = statement.executeQuery(sql);
+            rs.next();
+            if (BCrypt.checkpw(password, rs.getString("hash"))) {
+                User ret = new User(rs.getString("email"),rs.getString("name"),rs.getString("major"),
                         rs.getString("interests"), rs.getBoolean("isBanned"),rs.getBoolean("isAdmin"));
+                closeConnection(connection, statement);
+                return ret;
             }
-
         } catch (SQLException sqle) {
             sqle.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ClassNotFoundException cnfe) {
+            cnfe.printStackTrace();
         }
+        closeConnection(connection, statement);
         return null;
     }
 
+    private void closeConnection(Connection connection, Statement statement) {
+        try {
+            if (statement != null)
+                statement.close();
+        } catch (SQLException se2) {
+            try {
+                if (connection != null)
+                    connection.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+    }
 
     public void saveUserProfile() {
 
