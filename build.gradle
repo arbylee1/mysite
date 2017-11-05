@@ -19,12 +19,16 @@ jar {
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://repo.spring.io/libs-milestone'
+    }
 }
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
+    compile 'org.springframework.security:spring-security-web:5.0.0.RC1'
     compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.8-dmr'
     compile("org.springframework.boot:spring-boot-starter-thymeleaf")
     compile("org.springframework.boot:spring-boot-devtools")
