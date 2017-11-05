@@ -1,9 +1,7 @@
 package mysite.model.api.movie;
-import java.security.NoSuchAlgorithmException;
+
 import java.sql.*;
 import java.util.List;
-import java.security.SecureRandom;
-import java.security.MessageDigest;
 import org.springframework.security.crypto.bcrypt.*;
 
 
