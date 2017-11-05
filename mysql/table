@@ -1,9 +1,11 @@
 USE movie;
+DROP TABLE users;
 CREATE TABLE users (
 username VARCHAR(50) NOT NULL PRIMARY KEY,
-hash VARCHAR(32) NOT NULL,
-salt CHAR(25) NOT NULL,
+hash CHAR(60) NOT NULL,
 email VARCHAR(50),
+name VARCHAR(50),
+major VARCHAR(50),
 interests TEXT,
 isAdmin BIT,
 isBanned BIT
